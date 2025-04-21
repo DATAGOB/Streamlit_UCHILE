@@ -2,4 +2,5 @@
 streamlit
 pandas
 st-aggrid
-st-aggrid==0.5.0
+st-aggrid==0.4.0
+git+https://github.com/PandasAI/st-aggrid.git
