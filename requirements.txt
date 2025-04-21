@@ -1,7 +1,6 @@
 # requirements.txt
 streamlit
 pandas
-st-aggrid
 st-aggrid==0.4.0
 git+https://github.com/PandasAI/st-aggrid.git
 git+ssh://git@github.com/PandasAI/st-aggrid.git
