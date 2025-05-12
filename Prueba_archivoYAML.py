@@ -312,7 +312,8 @@ def main():
         pd.set_option('display.width', 200)
     
     else:
-        st.stop()
+        
+        st.info("No hay datos disponibles para este subdominio.")
 
 
 if __name__ == "__main__":
