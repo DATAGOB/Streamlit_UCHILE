@@ -1,5 +1,5 @@
 from librerias import *  # Importa todas las librerías externas desde librerias.py
-from dominios_data import dominios, data_catalog #ola
+from dominios_data import dominios, data_catalog #olaerfrfr
 
 def main():
     st.set_page_config(layout="wide")
