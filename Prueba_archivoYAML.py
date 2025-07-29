@@ -1,6 +1,7 @@
 from librerias import *  # Importa todas las librerías externas desde librerias.py
 from dominios_data import dominios, data_catalog
 import base64
+import buscador
 
 def main():
     st.set_page_config(layout="wide")
@@ -96,20 +97,40 @@ def main():
     # Mostrar la tabla de datos del subdominio seleccionado
     if selected_subdomain and selected_subdomain in data_catalog:
         st.subheader(f"Datos de {selected_subdomain}")
-        gb = GridOptionsBuilder.from_dataframe(data_catalog[selected_subdomain])
-        gb.configure_default_column(wrapText=True, autoHeight=True)
-        gb.configure_column("Descripción", wrapText=True, autoHeight=True)
-        grid_options = gb.build()
-        AgGrid(
-            data_catalog[selected_subdomain],
-            gridOptions=grid_options,
-            height=500,
-            fit_columns_on_grid_load=True,
-        )
-        pd.set_option('display.max_colwidth', 100)
-        pd.set_option('display.width', 200)
+        search_query = st.text_input("Ingresa tu búsqueda aquí:")
+
+        search_button = st.button("Buscar")
+
+        df_to_display = data_catalog[selected_subdomain]
+
+        if search_button:
+            if search_query: 
+                df_to_display = buscador.busqueda_dataframe(df_to_display, search_query)
+    
+                if df_to_display.empty:
+                    st.warning("No se encontraron resultados para tu búsqueda.")
+            else:
+                st.info("Ingresa un término de búsqueda para filtrar los datos.")
+  
+        if not df_to_display.empty:
+            gb = GridOptionsBuilder.from_dataframe(df_to_display)
+            gb.configure_default_column(wrapText=True, autoHeight=True)
+            if "Descripción" in df_to_display.columns: 
+                gb.configure_column("Descripción", wrapText=True, autoHeight=True)
+            grid_options = gb.build()
+            AgGrid(
+                df_to_display,
+                gridOptions=grid_options,
+                height=500,
+                fit_columns_on_grid_load=True,
+                key=f"aggrid_{selected_subdomain}_{search_query}" 
+            )
+            pd.set_option('display.max_colwidth', 100)
+            pd.set_option('display.width', 200)
+        else:
+            st.info("No hay datos disponibles para este subdominio.")
     else:
-        st.info("No hay datos disponibles para este subdominio.")
+        st.info("Selecciona un dominio y un subdominio para ver los datos.")
 
 if __name__ == "__main__":
     main()
