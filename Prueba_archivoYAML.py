@@ -1,11 +1,10 @@
-from librerias import *  # Importa todas las librerías externas desde librerias.py
+from librerias import * # Importa todas las librerías externas desde librerias.py
 from dominios_data import dominios, data_catalog
-import base64
 import buscador
 
 def main():
     st.set_page_config(layout="wide")
-    # Forzar modo oscuro visual usando CSS
+    # Forzar modo oscuro visual usando CSS (tu CSS se mantiene)
     st.markdown(
         """
         <style>
@@ -36,7 +35,7 @@ def main():
         """,
         unsafe_allow_html=True
     )
-    # Logos en la esquina superior izquierda, uno al lado del otro, fijos arriba con sticky
+    # Logos en la esquina superior izquierda (tu código de logos se mantiene)
     st.markdown(
         """
         <div style="position: sticky; top: 0px; left: 0px; z-index: 100; display: flex; flex-direction: row; align-items: center; gap: 10px; background: #18191A; padding: 8px 0 0 10px;">
@@ -49,22 +48,21 @@ def main():
         ),
         unsafe_allow_html=True
     )
-    # Centrar el título usando HTML, con menor margen superior y fuente más pequeña
+    # Centrar el título y texto explicativo (tu código se mantiene)
     st.markdown("<h1 style='text-align: center; margin-top: 15px; font-size: 2rem;'>Tablero de Dominios y Subdominios</h1>", unsafe_allow_html=True)
-    # Texto explicativo debajo del título
     st.markdown(
         """
         <div style='text-align: center; color: #F5F6F7; font-size: 1.1rem; margin-bottom: 20px;'>
-        En el contexto de gobierno de datos, un dominio de datos se define como un conjunto de datos que comparten características comunes, 
+        En el contexto de gobierno de datos, un **dominio de datos** se define como un conjunto de datos que comparten características comunes, 
         se rigen por las mismas reglas de negocio y pueden ser gestionados de manera similar. La definición de dominios en una organización permite organizar y estructurar los datos, 
-        de manera de facilitar su gobernanza. A su vez, un subdominio es un subconjunto de un dominio de datos. Se utiliza para dividir dominios en partes más pequeñas y específicas, facilitando así su gestión, análisis y gobernanza. 
+        de manera de facilitar su gobernanza. A su vez, un **subdominio** es un subconjunto de un dominio de datos. Se utiliza para dividir dominios en partes más pequeñas y específicas, facilitando así su gestión, análisis y gobernanza. 
         Permite abordar cada subdominio con enfoques particulares según sus características, sin perder la conexión con el dominio principal al que pertenece.
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Botón para mostrar/ocultar el mapa de dominios
+    # Botón para mostrar/ocultar el mapa de dominios: USANDO st.session_state
     if "show_mapa" not in st.session_state:
         st.session_state.show_mapa = False
 
@@ -72,7 +70,6 @@ def main():
         if st.button("Ocultar mapa"):
             st.session_state.show_mapa = False
         else:
-            # Mostrar la imagen centrada en alta calidad, sin forzar reducción
             st.markdown(
                 "<div style='display: flex; justify-content: center;'>"
                 "<img src='data:image/png;base64,{img}' style='max-width:100%; height:auto; image-rendering:auto; display:block;'/>"
@@ -85,6 +82,7 @@ def main():
         if st.button("Ver mapa dominio de datos"):
             st.session_state.show_mapa = True
 
+
     col1, col2 = st.columns(2)
     with col1:
         selected_domain = st.selectbox("Selecciona un dominio", list(dominios.keys()))
@@ -94,24 +92,69 @@ def main():
         else:
             selected_subdomain = None
 
-    # Mostrar la tabla de datos del subdominio seleccionado
     if selected_subdomain and selected_subdomain in data_catalog:
         st.subheader(f"Datos de {selected_subdomain}")
-        search_query = st.text_input("Ingresa tu búsqueda aquí:")
 
-        search_button = st.button("Buscar")
+        if "df_base" not in st.session_state or st.session_state.get("selected_subdomain") != selected_subdomain:
+            st.session_state.df_base = data_catalog[selected_subdomain] 
+            st.session_state.selected_subdomain = selected_subdomain
+            st.session_state.query_busqueda = "" 
+            st.session_state.valor_filtro = "Todos" 
 
-        df_to_display = data_catalog[selected_subdomain]
+        query_busqueda = st.text_input("Ingresa tu búsqueda aquí:", value=st.session_state.query_busqueda, key="input_busqueda")
 
-        if search_button:
-            if search_query: 
-                df_to_display = buscador.busqueda_dataframe(df_to_display, search_query)
-    
+        button_col1, button_col3 = st.columns(2) 
+        with button_col1:
+            boton_busqueda = st.button("Aplicar Búsqueda")
+        with button_col3:
+            resetear_filtros = st.button("Limpiar Todos los Filtros") 
+
+        if resetear_filtros:
+            st.session_state.query_busqueda = ""
+            st.session_state.valor_filtro = "Todos"
+            st.session_state.df_base = data_catalog[selected_subdomain]
+            st.rerun() 
+
+        df_to_display = st.session_state.df_base
+
+        if boton_busqueda:
+            st.session_state.query_busqueda = query_busqueda 
+            if st.session_state.query_busqueda: 
+                df_to_display = buscador.busqueda_dataframe(df_to_display, st.session_state.query_busqueda)
                 if df_to_display.empty:
                     st.warning("No se encontraron resultados para tu búsqueda.")
             else:
-                st.info("Ingresa un término de búsqueda para filtrar los datos.")
-  
+                st.info("Ingresa un término de búsqueda para aplicar la búsqueda.")
+        
+        elif st.session_state.query_busqueda:
+             df_to_display = buscador.busqueda_dataframe(df_to_display, st.session_state.query_busqueda)
+
+        if "valor_filtro" not in st.session_state:
+            st.session_state.valor_filtro = "Todos" 
+        
+        if "Unnamed: 0" in df_to_display.columns:
+            unnamed_options = ["Todos"] + df_to_display["Unnamed: 0"].unique().tolist()
+            
+            if st.session_state.valor_filtro not in unnamed_options:
+                st.session_state.valor_filtro = "Todos" 
+
+            filtro_seleccionado = st.selectbox(
+                'Filtra por valor en "Unnamed: 0"', 
+                options=unnamed_options, 
+                index=unnamed_options.index(st.session_state.valor_filtro),
+                key="unnamed_filter_selectbox" 
+            )
+            
+            if filtro_seleccionado != st.session_state.valor_filtro:
+                st.session_state.valor_filtro = filtro_seleccionado
+            
+            if st.session_state.valor_filtro != "Todos":
+                df_to_display = df_to_display[df_to_display["Unnamed: 0"] == st.session_state.valor_filtro]
+                if df_to_display.empty:
+                    st.warning("No hay datos para el filtro de 'Unnamed: 0' seleccionado.")
+        else:
+            st.info("La columna 'Unnamed: 0' no está disponible para aplicar filtros en este subdominio o no hay datos después de la búsqueda.")
+
         if not df_to_display.empty:
             gb = GridOptionsBuilder.from_dataframe(df_to_display)
             gb.configure_default_column(wrapText=True, autoHeight=True)
@@ -123,12 +166,15 @@ def main():
                 gridOptions=grid_options,
                 height=500,
                 fit_columns_on_grid_load=True,
-                key=f"aggrid_{selected_subdomain}_{search_query}" 
+                key=f"aggrid_{selected_subdomain}_{st.session_state.query_busqueda}_{st.session_state.valor_filtro}" 
             )
             pd.set_option('display.max_colwidth', 100)
             pd.set_option('display.width', 200)
-        else:
+        elif st.session_state.query_busqueda or st.session_state.valor_filtro != "Todos": # Solo advertir si hay filtros aplicados
+            pass # Mensaje ya manejado por los st.warning anteriores, evitamos duplicidad
+        else: # Si no hay filtros y el DF base está vacío
             st.info("No hay datos disponibles para este subdominio.")
+            
     else:
         st.info("Selecciona un dominio y un subdominio para ver los datos.")
 
