@@ -1,9 +1,14 @@
 from librerias import * # Importa todas las librerías externas desde librerias.py
 from dominios_data import dominios, data_catalog
 import buscador
+import streamlit as st
+from streamlit_image_zoom import image_zoom
+from PIL import Image
+
 
 def main():
     st.set_page_config(layout="wide")
+
     # Forzar modo oscuro visual usando CSS (tu CSS se mantiene)
     st.markdown(
         """
@@ -12,20 +17,12 @@ def main():
             background-color: #18191A !important;
             color: #F5F6F7 !important;
         }
-        .st-bw, .st-cq, .st-dc, .st-dd, .st-de, .st-df, .st-dg, .st-dh, .st-di, .st-dj, .st-dk, .st-dl, .st-dm, .st-dn, .st-do, .st-dp, .st-dq, .st-dr, .st-ds, .st-dt, .st-du, .st-dv, .st-dw, .st-dx, .st-dy, .st-dz, .st-e0, .st-e1, .st-e2, .st-e3, .st-e4, .st-e5, .st-e6, .st-e7, .st-e8, .st-e9, .st-ea, .st-eb, .st-ec, .st-ed, .st-ee, .st-ef, .st-eg, .st-eh, .st-ei, .st-ej, .st-ek, .st-el, .st-em, .st-en, .st-eo, .st-ep, .st-eq, .st-er, .st-es, .st-et, .st-eu, .st-ev, .st-ew, .st-ex, .st-ey, .st-ez {
-            background-color: #242526 !important;
-            color: #F5F6F7 !important;
-        }
-        /* Ocultar header y menú de Streamlit */
-        header, [data-testid="stHeader"], [data-testid="stToolbar"] {
-            display: none !important;
-            height: 0 !important;
-        }
-        /* Eliminar margen superior del contenido principal y agregar espacio para los logos */
         .block-container {
             padding-top: 20px !important;
         }
-        /* Cambiar color y tamaño de los labels de los selectbox */
+        header, [data-testid="stHeader"], [data-testid="stToolbar"] {
+            display: none !important;
+        }
         label, .stSelectbox label {
             color: #F5F6F7 !important;
             font-size: 1.3rem !important;
@@ -35,7 +32,8 @@ def main():
         """,
         unsafe_allow_html=True
     )
-    # Logos en la esquina superior izquierda (tu código de logos se mantiene)
+
+    # Logos en la esquina superior izquierda
     st.markdown(
         """
         <div style="position: sticky; top: 0px; left: 0px; z-index: 100; display: flex; flex-direction: row; align-items: center; gap: 10px; background: #18191A; padding: 8px 0 0 10px;">
@@ -48,8 +46,28 @@ def main():
         ),
         unsafe_allow_html=True
     )
-    # Centrar el título y texto explicativo (tu código se mantiene)
-    st.markdown("<h1 style='text-align: center; margin-top: 15px; font-size: 2rem;'>Tablero de Dominios y Subdominios</h1>", unsafe_allow_html=True)
+
+    # Título 
+    st.markdown("""
+        <div style="position: relative; text-align: center; margin-bottom: 50px;">
+        <hr style="border: none; height: 2px; background-color: #5f9ea0; position: absolute; top: 50%; width: 100%; z-index: 1;">
+        <h1 style="position: relative; display: inline-block; padding: 0 20px; z-index: 2;">Catalogo de datos UCHILE</h1>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Objetivo del catalogo de datos
+    st.markdown(
+        """
+        <div style='text-align: center; color: #F5F6F7; font-size: 1.1rem; margin-bottom: 20px;'>
+        El objetivo del catálogo de datos es centralizar, organizar y visibilizar los activos de datos de la organización, 
+        facilitando su acceso, comprensión y uso por parte de las distintas unidades, promoviendo la transparencia, la toma de decisiones informada y
+        el cumplimiento de principios de gobernanza de datos.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Descripción de dominios y subdominios
     st.markdown(
         """
         <div style='text-align: center; color: #F5F6F7; font-size: 1.1rem; margin-bottom: 20px;'>
@@ -62,27 +80,29 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Botón para mostrar/ocultar el mapa de dominios: USANDO st.session_state
-    if "show_mapa" not in st.session_state:
-        st.session_state.show_mapa = False
 
-    if st.session_state.show_mapa:
-        if st.button("Ocultar mapa"):
-            st.session_state.show_mapa = False
-        else:
-            st.markdown(
-                "<div style='display: flex; justify-content: center;'>"
-                "<img src='data:image/png;base64,{img}' style='max-width:100%; height:auto; image-rendering:auto; display:block;'/>"
-                "</div>".format(
-                    img=base64.b64encode(open("MAPA_DOMINIOS.png", "rb").read()).decode()
-                ),
-                unsafe_allow_html=True
-            )
-    else:
-        if st.button("Ver mapa dominio de datos"):
-            st.session_state.show_mapa = True
+    # Estado del mapa
+    if 'show_mapa' not in st.session_state:
+        st.session_state['show_mapa'] = False
 
+    # Botón de mostrar/ocultar mapa con rerun
+    if st.button("Ocultar mapa" if st.session_state['show_mapa'] else "Ver mapa dominio de datos"):
+        st.session_state['show_mapa'] = not st.session_state['show_mapa']
+        st.rerun()
+    
+    # Mostrar mapa de dominios
 
+    if st.session_state.get('show_mapa', False):
+        st.write("🔍 Usa scroll para hacer zoom y click-drag para mover:")
+
+        col1, col2, col3 = st.columns([1, 3, 1])  # Columna central 3 veces más ancha
+
+        with col2:
+            img = Image.open("MAPA_DOMINIOS.png")
+            image_zoom(img, size=(800, 600), keep_aspect_ratio=False, zoom_factor=2.0, increment=0.1)
+
+    
+    # Selección de dominio y subdominio
     col1, col2 = st.columns(2)
     with col1:
         selected_domain = st.selectbox("Selecciona un dominio", list(dominios.keys()))
@@ -180,3 +200,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
