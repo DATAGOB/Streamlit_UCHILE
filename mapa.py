@@ -20,5 +20,5 @@ def mostrar_mapa():
         col1, col2, col3 = st.columns([1, 3, 1])  # Columna central 3 veces más ancha
 
         with col2:
-            img = Image.open("MAPA_DOMINIOS.png")
+            img = Image.open("imagenes/MAPA_DOMINIOS.png")
             image_zoom(img, size=(800, 600), keep_aspect_ratio=False, zoom_factor=2.0, increment=0.1)

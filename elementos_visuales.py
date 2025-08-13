@@ -1,7 +1,13 @@
 import streamlit as st
 import base64
+import os
 
 def mostrar_logos():
+
+    dir_actual = os.path.dirname(os.path.abspath(__file__))
+    ruta_datagob = os.path.join(dir_actual, "imagenes", "logo_datagob_claro.png")
+    ruta_vti = os.path.join(dir_actual, "imagenes", "vti_claro.png")
+
     # Logos en la esquina superior izquierda
     st.markdown(
         """
@@ -10,8 +16,8 @@ def mostrar_logos():
             <img src="data:image/png;base64,{vti}" alt="vti" style="height:40px; display:block;">
         </div>
         """.format(
-            datagob=base64.b64encode(open("logo_datagob_claro.png", "rb").read()).decode(),
-            vti=base64.b64encode(open("vti_claro.png", "rb").read()).decode()
+            datagob=base64.b64encode(open(ruta_datagob, "rb").read()).decode(),
+            vti=base64.b64encode(open(ruta_vti, "rb").read()).decode()
         ),
         unsafe_allow_html=True
     )
