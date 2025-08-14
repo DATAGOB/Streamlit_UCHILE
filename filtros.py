@@ -7,7 +7,7 @@ import dominios_data
 pd.options.mode.copy_on_write = True
 
 # Función de callback para el botón "Limpiar"
-def reset_all_filters(selected_domain, selected_subdomain):
+def resetear_filtros(selected_domain, selected_subdomain):
     st.session_state.query_busqueda = ""
     st.session_state.valor_filtro = "Todos"
     st.session_state.df_base = dominios_data.obtener_df_mongodb(
@@ -49,7 +49,7 @@ def mostrar_filtros(selected_domain, selected_subdomain, client, db, collection_
     with button_col1:
         boton_busqueda = st.button("Aplicar Búsqueda")
     with button_col3:
-        st.button("Limpiar Todos los Filtros", on_click=reset_all_filters, args=(selected_domain, selected_subdomain))
+        st.button("Limpiar Todos los Filtros", on_click=resetear_filtros, args=(selected_domain, selected_subdomain))
 
     if boton_busqueda:
         st.session_state.query_busqueda = query_busqueda 
