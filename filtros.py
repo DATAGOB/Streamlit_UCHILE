@@ -19,7 +19,6 @@ def resetear_filtros(selected_domain, selected_subdomain):
     )
 
 def mostrar_filtros(selected_domain, selected_subdomain, client, db, collection_data):
-    # Condición mejorada: Reinicia el estado de la sesión si el dominio O el subdominio cambian.
     if "df_base" not in st.session_state or \
        st.session_state.get("selected_domain") != selected_domain or \
        st.session_state.get("selected_subdomain") != selected_subdomain:
@@ -30,7 +29,6 @@ def mostrar_filtros(selected_domain, selected_subdomain, client, db, collection_
         st.session_state.valor_filtro = "Todos"
         st.session_state.df_base = dominios_data.obtener_df_mongodb(client, db, collection_data, selected_domain, selected_subdomain)
 
-    # Guarda la conexión a la base de datos en el estado de la sesión
     st.session_state.client = client
     st.session_state.db = db
     st.session_state.collection_data = collection_data
