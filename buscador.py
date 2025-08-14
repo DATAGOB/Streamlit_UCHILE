@@ -1,5 +1,9 @@
 import unicodedata
+
 import polars as pl
+import pandas as pd
+
+pd.options.mode.copy_on_write = True
 
 def normalizar_query(text: str) -> str:
     text = text.lower()
@@ -17,4 +21,4 @@ def busqueda_dataframe(df, query):
                                               .str.contains(query_buena))
        )
     )   
-    return df_search.to_pandas()
+    return df_search.to_pandas(use_pyarrow_extension_array=True)
