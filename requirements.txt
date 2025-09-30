@@ -6,3 +6,4 @@ polars==1.31
 streamlit-image-zoom==0.0.4
 pymongoarrow==1.10.0
 dotenv==0.9.9
+streamlit-option-menu==0.4.0
