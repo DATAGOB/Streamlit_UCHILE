@@ -56,3 +56,24 @@ def mostrar_textos_intro():
         """,
         unsafe_allow_html=True
     )
+
+
+def mostrar_titulo_modelo():
+    # Título 
+    st.markdown("""
+        <div style="position: relative; text-align: center; margin-bottom: 50px;">
+        <hr style="border: none; height: 2px; background-color: #5f9ea0; position: absolute; top: 50%; width: 100%; z-index: 1;">
+        <h1 style="position: relative; display: inline-block; padding: 0 20px; z-index: 2;">Modelos de datos UCHILE</h1>
+        </div>
+        """, unsafe_allow_html=True)
+    
+def mostrar_textos_modelo():
+    # Objetivo del catalogo de datos
+    st.markdown(
+        """
+        <div style='text-align: center; color: #F5F6F7; font-size: 1.1rem; margin-bottom: 20px;'>
+        En esta sección podrás explorar los distintos modelos de datos que utilizamos sobre nuestros datos transaccionales.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
