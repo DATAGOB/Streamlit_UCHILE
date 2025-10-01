@@ -1,10 +1,20 @@
-# -*- coding: utf-8 -*-
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+import threading
 import streamlit as st
+import streamlit.components.v1 as components
+import uvicorn
+
+# Montar FastAPI en un hilo aparte
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static/reports"), name="static")
+
+def run_server():
+    uvicorn.run(app, host="127.0.0.1", port=8502)
+
+thread = threading.Thread(target=run_server, daemon=True)
+thread.start()
 
 def mostrar_modelo():
-    st.title("📊 Modelos de Datos")
-    st.write("Aquí puedes documentar, visualizar o cargar tus modelos de datos.")
-    
-    uploaded_file = st.file_uploader("Sube tu modelo de datos (ej. .csv, .json, .png)", type=["csv", "json", "png"])
-    if uploaded_file:
-        st.success(f"Archivo cargado: {uploaded_file.name}")
+    st.header("📊 Modelo de datos")
+    components.iframe("http://127.0.0.1:8502/static/AllTablesDetails_1_index.html", height=800)
