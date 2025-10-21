@@ -1,8 +1,6 @@
 import dotenv
 import os
-
 import streamlit as st
-
 import diseno
 import mapa
 import filtros
@@ -11,6 +9,7 @@ import elementos_visuales
 import conexion
 import modelo_nuevo
 from streamlit_option_menu import option_menu
+
 
 dotenv.load_dotenv('.env')
 user = os.getenv('user_mongodb')
@@ -32,8 +31,30 @@ def main():
             menu_title="Menú",  # título del menú
             options=["Catálogo de datos", "Modelos de datos"],  # opciones
             icons=["collection", "diagram-3"],  # íconos bootstrap
-            menu_icon="cast",  
+            menu_icon="cast",  # ícono del menú
             default_index=0,  # página inicial
+            styles={
+                "container": {
+                    "padding": "5px",
+                    "background-color": "#f9f9f9"
+                },
+                "icon": {
+                    "color": "black",
+                    "font-size": "20px"
+                },
+                "nav-link": {
+                    "font-size": "16px",
+                    "text-align": "left",
+                    "margin": "2px 0",
+                    "color": "#000000"
+                },
+                "nav-link-selected": {
+                    "background-color": "#5CB2DB",  # Azul claro
+                    "color": "white",  # texto blanco sobre fondo azul
+                    "font-weight": "bold",
+                    "border-radius": "5px"
+                },
+            }
         )
 
       # 👇 dependiendo de la selección, llama al módulo correcto

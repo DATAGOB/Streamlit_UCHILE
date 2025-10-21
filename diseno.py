@@ -8,8 +8,8 @@ def aplicar_css():
         """
         <style>
         body, .stApp {
-            background-color: #18191A !important;
-            color: #F5F6F7 !important;
+            background-color: #ffffff !important;  /* Fondo blanco */
+            color: #000000 !important;              /* Texto negro */
         }
         .block-container {
             padding-top: 20px !important;
@@ -18,7 +18,7 @@ def aplicar_css():
             display: none !important;
         }
         label, .stSelectbox label {
-            color: #F5F6F7 !important;
+            color: #000000 !important;              /* Etiquetas negras */
             font-size: 1.3rem !important;
             font-weight: 600 !important;
         }
